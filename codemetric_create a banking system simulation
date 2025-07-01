@@ -1,0 +1,119 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class BankAccount {
+private:
+    string name;
+    double balance;
+
+public:
+    BankAccount(string accName, double initialBalance) {
+        name = accName;
+        balance = initialBalance;
+    }
+
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposited ₹" << amount << " successfully.\n";
+        } else {
+            cout << "Invalid deposit amount.\n";
+        }
+    }
+
+    void withdraw(double amount) {
+        if (amount <= balance && amount > 0) {
+            balance -= amount;
+            cout << "Withdrawn ₹" << amount << " successfully.\n";
+        } else {
+            cout << "Insufficient funds or invalid amount.\n";
+        }
+    }
+
+    void showBalance() const {
+        cout << name << "'s current balance: ₹" << balance << endl;
+    }
+
+    string getName() const {
+        return name;
+    }
+};
+
+int main() {
+    vector<BankAccount> accounts;
+    int choice, currentIndex = -1;
+
+    while (true) {
+        cout << "\n--- Banking System Menu ---\n";
+        cout << "1. Create new account\n";
+        cout << "2. Switch account\n";
+        cout << "3. Deposit\n";
+        cout << "4. Withdraw\n";
+        cout << "5. Balance inquiry\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (cin.fail()) {
+            cin.clear(); // reset error state
+            cin.ignore(1000, '\n'); // discard invalid input
+            cout << "Invalid input. Please enter a number.\n";
+            continue;
+        }
+
+        if (choice == 1) {
+            string name;
+            double balance;
+            cout << "Enter account holder's name: ";
+            cin >> name;
+            cout << "Enter initial balance: ";
+            cin >> balance;
+            accounts.push_back(BankAccount(name, balance));
+            currentIndex = accounts.size() - 1;
+            cout << "Account created and selected.\n";
+        } else if (choice == 2) {
+            if (accounts.empty()) {
+                cout << "No accounts available. Create one first.\n";
+                continue;
+            }
+            cout << "Available accounts:\n";
+            for (int i = 0; i < accounts.size(); i++) {
+                cout << i + 1 << ". " << accounts[i].getName() << endl;
+            }
+            cout << "Select account number: ";
+            cin >> currentIndex;
+            currentIndex--;
+            if (currentIndex < 0 || currentIndex >= accounts.size()) {
+                cout << "Invalid selection.\n";
+                currentIndex = -1;
+            } else {
+                cout << "Switched to account: " << accounts[currentIndex].getName() << endl;
+            }
+        } else if (choice >= 3 && choice <= 5) {
+            if (currentIndex == -1) {
+                cout << "No account selected. Please switch to an account first.\n";
+                continue;
+            }
+            double amount;
+            if (choice == 3) {
+                cout << "Enter amount to deposit: ";
+                cin >> amount;
+                accounts[currentIndex].deposit(amount);
+            } else if (choice == 4) {
+                cout << "Enter amount to withdraw: ";
+                cin >> amount;
+                accounts[currentIndex].withdraw(amount);
+            } else {
+                accounts[currentIndex].showBalance();
+            }
+        } else if (choice == 6) {
+            cout << "Exiting the system. Goodbye!\n";
+            break;
+        } else {
+            cout << "Invalid choice.\n";
+        }
+    }
+
+    return 0;
+}
